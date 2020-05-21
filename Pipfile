@@ -10,6 +10,8 @@ pytest = "*"
 [packages]
 pymongo = "*"
 vk-api = "*"
+pymystem3 = "*"
+nltk = "*"
 
 [requires]
 python_version = "3.7"

@@ -4,7 +4,7 @@ from api import api
 from datetime import datetime
 import json
 from itertools import product
-
+import webbrowser
 from os import path
 
 
@@ -15,6 +15,14 @@ class APP:
         self.user_id = str(self.vk.resolve_screen_name(_id))
         self.db = model.DB(self.user_id)
     
+    @staticmethod
+    def user_input():
+        url = 'https://oauth.vk.com/authorize?client_id=7331062&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,groups&response_type=token&v=5.103'
+        webbrowser.open_new_tab(url)
+        token = input('Введите токен: ')
+        _id = input('Введите ваш id: ')
+        return APP(token, _id)
+
     @staticmethod
     def progress_bar(data, func, name, one=False, bar_len = 50):
         start = datetime.now()
@@ -49,18 +57,17 @@ class APP:
         self.db.save_settings_to_db(self.settings_to_dict())
 
     def load_settings(self):
-        self.load_settings_from_db() or self.load_settings_from_file() or self.load_settings_from_vk()
+        self.load_settings_from_file() or self.load_settings_from_db() or self.load_settings_from_vk()
 
     def load_settings_from_file(self):
         file_name = f'profile_{self.user_id}.json'
         if not path.isfile(file_name):
-            return False
-        file_name = 'profile.json'
+            file_name = 'profile.json'
         if not path.isfile(file_name):
             return False
         with open(file_name, mode='r', encoding='utf-8') as file:
             profile = json.load(file)
-            self.search_params = profile.get('search', {})
+            self.search_params = dict(profile.get('search', {}))
             self.match_params =  profile.get('match', [])
             self.intersection_params = profile.get('intersection', [])
             return True

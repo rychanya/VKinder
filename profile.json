@@ -1,0 +1,39 @@
+{
+    "search": [
+        [
+            "sex",
+            1
+        ],
+        [
+            "city",
+            1
+        ],
+        [
+            "country",
+            1
+        ],
+        [
+            "has_photo",
+            1
+        ],
+        [
+            "age_from",
+            "18"
+        ],
+        [
+            "age_to",
+            "30"
+        ]
+    ],
+    "match": [
+        [
+            "can_write_private_message",
+            1
+        ],
+        [
+            "can_send_friend_request",
+            1
+        ]
+    ],
+    "intersection": []
+}

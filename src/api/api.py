@@ -39,11 +39,6 @@ class VK:
             values={'user_id': _id}
             )['items']
 
-    def get_settings_from_user_profile(self, _id):
-        return self.get_user(_id)
-        # user['gpoups'] = self.get_groups(_id)
-        # return user
-
     def search(self, **params):
         params = {key: value for key, value in params.items() if key in search_params}
         params.update({'fields': all_fields, 'count': 1000})

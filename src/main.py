@@ -2,10 +2,7 @@ from vkinder import app
 from db.pipeline import make_pipeline
 
 if __name__ == "__main__":
-    main = app.APP(
-        token='958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008',
-        _id='rychanya'
-        )  
+    main = app.APP.user_input()
     main.load_settings()
     main.check_settings()           
     if main.db.is_db_empty():
@@ -23,5 +20,6 @@ if __name__ == "__main__":
         main.out_html(users)
         for user in users:
             main.db.set_skip(user['id'])
-        main.save_settings_to_db()
+    main.save_settings_to_db()
+    main.save_settings_to_file()
   

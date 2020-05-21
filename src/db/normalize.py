@@ -3,14 +3,16 @@ from pymystem3 import Mystem
 from string import punctuation
 
 lemmatize_fields = [
-    'status', 'activities', 'interests', 'music', 'movies',\
-        'tv', 'books', 'games', 'about','quotes']
+    'status', 'activities', 'interests',
+    'music', 'movies', 'tv', 'books',
+    'games', 'about', 'quotes'
+]
 
 obj_fields = {
     'career': 'company',
     'city': 'id',
     'country': 'id',
-    'education': 'university', 
+    'education': 'university',
     'last_seen': 'time',
     'military': 'unit_id',
     'occupation': 'name'
@@ -18,13 +20,17 @@ obj_fields = {
 
 array_fields = ['schools', 'universities']
 
+
 def lemmatize(text):
     lm = Mystem()
     rus_stopwords = stopwords.words('russian')
     tokens = lm.lemmatize(text.lower())
-    tokens = [token for token in tokens if token not in rus_stopwords\
-        and token != ' ' and token.strip() not in punctuation]
+    tokens = [
+        token for token in tokens if token not in rus_stopwords
+        and token != ' ' and token.strip() not in punctuation
+            ]
     return list(set(tokens))
+
 
 def normalize(data: dict):
     def get_target(value, targets):
@@ -52,6 +58,6 @@ def normalize(data: dict):
     if 'personal' in data:
         for key, value in data['personal'].items():
             data[key] = value
-    
+
     if 'occupation' in data:
         data['occupation'] = str(data['occupation'])

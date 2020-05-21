@@ -1,5 +1,5 @@
-from pymongo import MongoClient
 from bson import SON
+
 
 def make_intersection_pipeline(criterions):
     def size_pipline(name, value):
@@ -16,12 +16,17 @@ def make_intersection_pipeline(criterions):
             '$sort': SON([(f'{name}_w', -1) for name, _ in criterions])
         }]
 
+
 def make_match_pipeline(criterions):
     if not criterions:
         return []
     return {
-        '$match': {name: {'$in': value} if isinstance(value, list) else value for name, value in criterions}
+        '$match': {
+            name: {'$in': value} if isinstance(value, list)
+            else value for name, value in criterions
+            }
     }
+
 
 def make_pipeline(match_criterions, intersection_criterions):
     pipeline = []

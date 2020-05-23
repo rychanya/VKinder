@@ -175,19 +175,6 @@ class APP:
                 file, ensure_ascii=False, indent=4)
             print(f'результат записан в {file_name}')
 
-    def out_html(self, users):
-        file_name = f'out_{self.user_id}.html'
-        with open(file_name, mode='w', encoding='utf-8') as file:
-            for user in users:
-                href = f"https://vk.com/{user['domain']}"
-                file.write(f'<a href="{href}"><h1>{user["domain"]}</h1></a>\n')
-                photos = self.get_top_three_profile_photos(user['id'])
-                if not isinstance(photos, list):
-                    continue
-                for photo in photos:
-                    # print(photo)
-                    file.write('<img src="' + photo + '" width="800">')
-
     def check_settings(self):
         obligatory_search_params = [
             'age_from', 'age_to', 'sex', 'country', 'city'

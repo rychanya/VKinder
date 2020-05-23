@@ -30,7 +30,8 @@ class VK:
         except ValueError:
             _id = self.sesion.method(
                 'utils.resolveScreenName',
-                values={'screen_name': screen_name})
+                values={'screen_name': screen_name}
+                )
             if _id and _id['type'] == 'user':
                 return _id['object_id']
 

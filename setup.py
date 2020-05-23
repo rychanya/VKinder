@@ -4,5 +4,11 @@ setup(
     packages=find_packages('src'),
     name='vkinder',
     package_dir={'': 'src'},
-    py_modules=['main']
+    py_modules=['main'],
+    install_requires = [
+        'pymongo',
+        'vk-api',
+        'pymystem3',
+        'nltk',
+    ]
 )

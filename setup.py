@@ -9,6 +9,5 @@ setup(
         'pymongo',
         'vk-api',
         'pymystem3',
-        'nltk',
     ]
 )

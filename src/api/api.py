@@ -41,10 +41,13 @@ class VK:
             {'user_ids': _id, 'fields': all_fields})[0]
 
     def get_groups(self, _id):
-        return self.tools.get_all(
-            'groups.get', max_count=1000,
-            values={'user_id': _id}
-            )['items']
+        try:
+            return self.tools.get_all(
+                'groups.get', max_count=1000,
+                values={'user_id': _id}
+                )['items']
+        except vk_api.exceptions.VkToolsException:
+            return []
 
     def search(self, **params):
         params = {
@@ -60,7 +63,10 @@ class VK:
             'album_id': 'profile',
             'extended': 1
         }
-        photos = self.sesion.method('photos.get', values=params)['items']
+        try:
+            photos = self.sesion.method('photos.get', values=params)['items']
+        except vk_api.exceptions.VkApiError:
+            return []
         return sorted(
             photos,
             key=lambda value: value['likes']['count'],

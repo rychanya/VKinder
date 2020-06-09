@@ -1,9 +1,11 @@
 import pytest
 from db import model
 
+
 @pytest.fixture
 def fake_db_name(monkeypatch):
     monkeypatch.setattr(model.DB, 'DB_NAME', 'vki_test')
+
 
 @pytest.fixture
 def fake_db(fake_db_name):
@@ -11,6 +13,7 @@ def fake_db(fake_db_name):
     yield db
     db.connection.drop_database(db.DB_NAME)
     db.connection.close()
+
 
 def test_save(fake_db):
     def count_docs():
@@ -21,15 +24,14 @@ def test_save(fake_db):
     fake_db.save({'id': 1, 'some': 'field'})
     assert count_docs() == 1
 
+
 def test_set_skip(fake_db):
     fake_db.save({'id': 5})
-    assert fake_db.is_db_empty() == False
+    assert fake_db.is_db_empty() is False
     fake_db.set_skip(5)
-    assert fake_db.is_db_empty() == True
+    assert fake_db.is_db_empty() is True
+
 
 def test_load_and_save_settings(fake_db):
     fake_db.save_settings_to_db({'some': 'settings'})
     assert fake_db.user_id == fake_db.load_settings_from_db()['id']
-
-    
-    

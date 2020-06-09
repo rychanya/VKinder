@@ -1,38 +1,46 @@
 from bson import SON
 
 
-def make_intersection_pipeline(criterions):
-    def size_pipline(name, value):
-        return (
-            f'{name}_w',
-            {'$size': {'$setIntersection': [f'${name}', value]}}
-            )
+def chose_project_method(name, value):
+
+    def match(name, value):
+        return {'$eq': [f'${name}', value]}
+
+    def intersection(name, value):
+        return {'$size':  {'$setIntersection': [f'${name}', value]}}
+
+    if isinstance(value, (list, tuple, set)):
+        return intersection(name, value)
+    else:
+        return match(name, value)
+
+
+def make_pipeline(criterions):
     if not criterions:
-        return []
-    return [{
-        '$set': SON([size_pipline(name, value) for name, value in criterions])
+        return [
+            {
+                '$match': {'skip': {'$exists': False}}
+            },
+            {
+                '$limit': 10
+            }
+        ]
+    return [
+        {
+            '$match': {'skip': {'$exists': False}}
         },
         {
-            '$sort': SON([(f'{name}_w', -1) for name, _ in criterions])
-        }]
-
-
-def make_match_pipeline(criterions):
-    if not criterions:
-        return []
-    return {
-        '$match': {
-            name: {'$in': value} if isinstance(value, list)
-            else value for name, value in criterions
-            }
-    }
-
-
-def make_pipeline(match_criterions, intersection_criterions):
-    pipeline = []
-    copy_match_criterions = match_criterions.copy()
-    copy_match_criterions.append(('skip', {'$exists': False}))
-    pipeline.append(make_match_pipeline(copy_match_criterions))
-    pipeline.extend(make_intersection_pipeline(intersection_criterions))
-    pipeline.append({'$limit': 10})
-    return pipeline
+            '$project': SON(
+                [(name, chose_project_method(name, value))
+                    for name, value in criterions] + [('id', 1), ('domain', 1)]
+                    )
+        },
+        {
+            '$sort': SON(
+                [(name, -1) for name, value in criterions]
+                )
+        },
+        {
+            '$limit': 10
+        }
+    ]

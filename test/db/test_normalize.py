@@ -1,6 +1,6 @@
 import pytest
-
 from db import normalize
+
 
 @pytest.mark.parametrize(
     'text, lems',
@@ -14,6 +14,7 @@ from db import normalize
 def test_lemmatize(text, lems):
     assert set(normalize.lemmatize(text)) == set(lems)
 
+
 def test_normalize_lemmatize_fields():
     exist_field = normalize.lemmatize_fields[0]
     exist_data = 'коты'
@@ -24,6 +25,7 @@ def test_normalize_lemmatize_fields():
             assert data[field] == normalize.lemmatize(exist_data)
         else:
             assert data[field] == []
+
 
 @pytest.mark.parametrize(
     'data, expected, field',
@@ -44,13 +46,15 @@ def test_normalize_obj_fields(data, expected, field):
     normalize.normalize(data)
     assert data[field] == expected
 
+
 def test_normalize_array_fields():
     data = {
         'schools': [{'id': 5}, {'id': 7}]
     }
     normalize.normalize(data)
-    assert data['schools'] == [5,7]
+    assert data['schools'] == [5, 7]
     assert data['universities'] == []
+
 
 def test_normalize_personal():
     data = {
@@ -63,6 +67,7 @@ def test_normalize_personal():
     assert 'personal' in data
     assert data['personal_field'] == 'personal_dta'
     assert data['some'] == 'thing'
+
 
 def test_normalize_occupation():
     data = {

@@ -3,45 +3,41 @@ from db import pipeline
 from bson import SON
 
 
-def test_make_intersection_pipeline():
-    assert [] == pipeline.make_intersection_pipeline([])
-    pl_set, pl_sort = pipeline.make_intersection_pipeline(
-        [('one', [6,7]), ('two', [7, 8])]
-        )
-    assert pl_set == {
-        '$set': SON([
-            (
-                'one_w',
-                {'$size': {'$setIntersection': ['$one', [6,7]]}}
-            ),
-            (
-                'two_w',
-                {'$size': {'$setIntersection': ['$two', [7, 8]]}}
-            )
-        ])
-        }
-    assert pl_sort == {
-        '$sort': SON([
-            (
-                'one_w', -1
-            ),
-            (
-                'two_w', - 1
-            )
-        ])
-    }
+@pytest.mark.parametrize(
+    'project, expected',
+    [
+        (('name', 'value'), ({'$eq': ['$name', 'value']})),
+        (('name', [1, 2]), ({'$size':  {'$setIntersection': ['$name', [1, 2]]}})),
+        (('name', (1, 2)), ({'$size':  {'$setIntersection': ['$name', (1, 2)]}})),
+        (('name', {1, 2}), ({'$size':  {'$setIntersection': ['$name', {1, 2}]}})),
+        (('name', []), ({'$size':  {'$setIntersection': ['$name', []]}})),
+        (('name', set()), ({'$size':  {'$setIntersection': ['$name', set()]}})),
+    ]
+)
+def test_chose_project_method(project, expected):
+    result = pipeline.chose_project_method(*project)
+    assert result == expected
 
-def test_make_match_pipeline():
-    pl = pipeline.make_match_pipeline([
-        ('one', 1),
-        ('two', [1, 2])
-    ])
-    assert pl == {
-        '$match': {
-            'one': 1,
-            'two': {'$in': [1, 2]}}
-    }
+
+def test_make_pipeline_empty():
+    pl = pipeline.make_pipeline([])
+    assert pl[0] == {'$match': {'skip': {'$exists': False}}}
+    assert pl[-1] == {'$limit': 10}
+
 
 def test_make_pipeline():
-    pl = pipeline.make_pipeline([], [])
+    pl = pipeline.make_pipeline([('name1', 6), ('name2', [1, 2])])
+    assert pl[0] == {'$match': {'skip': {'$exists': False}}}
     assert pl[-1] == {'$limit': 10}
+    assert '$project' in pl[1] and len(pl[1]) == 1
+    assert '$sort' in pl[2] and len(pl[2]) == 1
+    assert pl[1]['$project'] == SON([
+        ('name1', {'$eq': ['$name1', 6]}),
+        ('name2', {'$size':  {'$setIntersection': ['$name2', [1, 2]]}}),
+        ('id', 1),
+        ('domain', 1)
+    ])
+    assert pl[2]['$sort'] == SON([
+        ('name1', -1),
+        ('name2', -1)
+    ])
